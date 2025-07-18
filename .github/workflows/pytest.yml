@@ -1,135 +1,131 @@
-name: Cross-browser Selenium Tests
+name: Cross Browser Selenium Tests
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
-  test-chrome:
-    name: Test on Chrome (Ubuntu)
+  chrome-test:
+    name: Chrome
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
-      - name: Set up Chrome
-        uses: browser-actions/setup-chrome@v1
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@latest
 
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pytest pytest-html
 
-      - name: Run tests (Chrome)
+      - name: Run test on Chrome
         env:
           BROWSER: chrome
-        run: pytest test_cross_browser_github.py --html=report_chrome.html --self-contained-html
+        run: |
+          pytest test_cross_browser_github.py --html=report_chrome.html --self-contained-html
 
-      - name: Upload Chrome report
-        if: always()
+      - name: Upload Chrome Report
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: chrome-report
+          name: report-chrome
           path: report_chrome.html
 
-  test-firefox:
-    name: Test on Firefox (Ubuntu)
+  firefox-test:
+    name: Firefox
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pytest pytest-html
 
-      - name: Run tests (Firefox)
+      - name: Run test on Firefox
         env:
           BROWSER: firefox
-        run: pytest test_cross_browser_github.py --html=report_firefox.html --self-contained-html
+        run: |
+          pytest test_cross_browser_github.py --html=report_firefox.html --self-contained-html
 
-      - name: Upload Firefox report
-        if: always()
+      - name: Upload Firefox Report
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: firefox-report
+          name: report-firefox
           path: report_firefox.html
 
-  test-safari:
-    name: Test on Safari (macOS)
-    runs-on: macos-latest
+  safari-test:
+    name: Safari
+    runs-on: macos-latest  # MacOS runner necesario
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pytest pytest-html
 
-      - name: Run tests (Safari)
+      - name: Run test on Safari
         env:
           BROWSER: safari
-        run: pytest test_cross_browser_github.py --html=report_safari.html --self-contained-html
+        run: |
+          pytest test_cross_browser_github.py --html=report_safari.html --self-contained-html
 
-      - name: Upload Safari report
-        if: always()
+      - name: Upload Safari Report
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: safari-report
+          name: report-safari
           path: report_safari.html
 
-  test-brave:
-    name: Test on Brave (Ubuntu)
+  brave-test:
     runs-on: ubuntu-latest
+    env:
+      BROWSER: brave
 
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
-      - name: Install Brave browser
+      - name: Install Brave Browser
         run: |
-          sudo apt install apt-transport-https curl -y
-          sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave.com/signing-keys/brave-browser-archive-keyring.gpg
-          echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
           sudo apt update
-          sudo apt install brave-browser -y
-
+          sudo apt install -y curl
+          sudo curl -fsSLo /usr/share/keyrings/brave-browser.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/brave-browser.gpg arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+          sudo apt update
+          sudo apt install -y brave-browser
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Run tests (Brave)
-        env:
-          BROWSER: brave
-        run: pytest test_cross_browser_github.py --html=report_brave.html --self-contained-html
-
+          pip install pytest pytest-html
+      - name: Run Brave tests
+        run: |
+          pytest test_cross_browser_github.py --html=report_brave.html --self-contained-html
       - name: Upload Brave report
-        if: always()
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: brave-report
+          name: report-brave
           path: report_brave.html
