@@ -92,7 +92,7 @@ Los reportes se generan con `pytest-html` y están disponibles como artefactos d
 ## ✍️ Autor
 
 Luis Sánchez  
-📫 [Tu correo o contacto opcional]
+📫 [hlcxpl@gmaill.com]
 
 ---
 
