@@ -16,16 +16,16 @@ def test_github_homepage_banner():
 
     elif browser == "brave":
         options = ChromeOptions()
-        options.binary_location = "/usr/bin/brave-browser"  # ajustar según el sistema
+        options.binary_location = "/usr/bin/brave-browser" 
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         driver = webdriver.Chrome(options=options)
 
     elif browser == "safari":
-        driver = webdriver.Safari()  # Safari no tiene modo headless
+        driver = webdriver.Safari() 
 
-    else:  # default: chrome
+    else: 
         options = ChromeOptions()
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
