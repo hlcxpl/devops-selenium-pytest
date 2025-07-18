@@ -3,6 +3,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 def test_github_homepage_banner():
     browser = os.getenv("BROWSER", "chrome")
@@ -14,7 +16,7 @@ def test_github_homepage_banner():
 
     elif browser == "brave":
         options = ChromeOptions()
-        options.binary_location = "/usr/bin/brave-browser"  # ⚠️ depende de dónde esté instalado
+        options.binary_location = "/usr/bin/brave-browser"  # ajustar según el sistema
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
@@ -23,14 +25,18 @@ def test_github_homepage_banner():
     elif browser == "safari":
         driver = webdriver.Safari()  # Safari no tiene modo headless
 
-    else:  # Chrome
+    else:  # default: chrome
         options = ChromeOptions()
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         driver = webdriver.Chrome(options=options)
 
-    element = driver.find_element(By.ID, 'hero-section-brand-heading')
-    assert element.text == 'Build and ship software on a single, collaborative platform'
+    driver.get('https://github.com')
 
-    driver.quit()
+    try:
+        wait = WebDriverWait(driver, 10)
+        element = wait.until(EC.presence_of_element_located((By.ID, 'hero-section-brand-heading')))
+        assert element.text == 'Build and ship software on a single, collaborative platform'
+    finally:
+        driver.quit()
