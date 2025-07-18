@@ -22,10 +22,11 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest --maxfail=1 --disable-warnings -q
+          pytest --maxfail=1 --disable-warnings -q --junitxml=test-results.xml
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: pytest-results
           path: test-results.xml
