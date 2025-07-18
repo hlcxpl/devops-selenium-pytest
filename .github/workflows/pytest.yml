@@ -42,16 +42,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install Firefox & Geckodriver (latest)
-        run: |
-          sudo apt update
-          sudo apt install -y firefox curl jq
-          GECKO_VERSION=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | jq -r .tag_name)
-          echo "Latest Geckodriver version: $GECKO_VERSION"
-          wget https://github.com/mozilla/geckodriver/releases/download/$GECKO_VERSION/geckodriver-linux64.tar.gz
-          tar -xvzf geckodriver-linux64.tar.gz
-          chmod +x geckodriver
-          sudo mv geckodriver /usr/local/bin/
+      # Firefox y Geckodriver ya están preinstalados en ubuntu-latest
 
       - run: |
           pip install -r requirements.txt
