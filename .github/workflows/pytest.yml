@@ -45,8 +45,9 @@ jobs:
       - name: Install Firefox & Geckodriver (latest)
         run: |
           sudo apt update
-          sudo apt install -y firefox curl
-          GECKO_VERSION=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
+          sudo apt install -y firefox curl jq
+          GECKO_VERSION=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | jq -r .tag_name)
+          echo "Latest Geckodriver version: $GECKO_VERSION"
           wget https://github.com/mozilla/geckodriver/releases/download/$GECKO_VERSION/geckodriver-linux64.tar.gz
           tar -xvzf geckodriver-linux64.tar.gz
           chmod +x geckodriver
@@ -71,7 +72,7 @@ jobs:
   safari-test:
     name: Safari
     runs-on: macos-latest
-    if: ${{ false }}  # cambia a `true` si usas macOS runner pago
+    if: ${{ false }}  # cambia a true si usas macOS runner pago
     steps:
       - uses: actions/checkout@v4
 
