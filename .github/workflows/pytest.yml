@@ -37,15 +37,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v4
         with:
           python-version: "3.12"
 
-      - name: Install Firefox & Geckodriver
+      - name: Install Firefox & Geckodriver (latest)
         run: |
           sudo apt update
-          sudo apt install -y firefox
-          wget https://github.com/mozilla/geckodriver/releases/latest/download/geckodriver-linux64.tar.gz
+          sudo apt install -y firefox curl
+          GECKO_VERSION=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
+          wget https://github.com/mozilla/geckodriver/releases/download/$GECKO_VERSION/geckodriver-linux64.tar.gz
           tar -xvzf geckodriver-linux64.tar.gz
           chmod +x geckodriver
           sudo mv geckodriver /usr/local/bin/
@@ -69,9 +71,10 @@ jobs:
   safari-test:
     name: Safari
     runs-on: macos-latest
-    if: ${{ false }} # Cambia a true si tienes minutos en macOS
+    if: ${{ false }}  # cambia a `true` si usas macOS runner pago
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v4
         with:
           python-version: "3.12"
@@ -93,16 +96,17 @@ jobs:
           path: report_safari.html
 
   brave-test:
-    name: Brave (optional, local or custom runner)
+    name: Brave
     runs-on: ubuntu-latest
-    if: ${{ false }} # Cambia a true si Brave está instalado en tu runner
+    if: ${{ false }}  # cambia a true si Brave está instalado o usas self-hosted runner
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v4
         with:
           python-version: "3.12"
 
-      - name: Install Brave (opcional, requiere root)
+      - name: Install Brave (opcional)
         run: |
           sudo apt install -y curl
           sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave.com/static-assets/keys/brave-browser-archive-keyring.gpg
