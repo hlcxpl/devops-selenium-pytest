@@ -21,7 +21,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run tests (Chrome)
@@ -51,7 +51,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run tests (Firefox)
@@ -81,7 +81,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run tests (Safari)
@@ -95,3 +95,41 @@ jobs:
         with:
           name: safari-report
           path: report_safari.html
+
+  test-brave:
+    name: Test on Brave (Ubuntu)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install Brave browser
+        run: |
+          sudo apt install apt-transport-https curl -y
+          sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave.com/signing-keys/brave-browser-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+          sudo apt update
+          sudo apt install brave-browser -y
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests (Brave)
+        env:
+          BROWSER: brave
+        run: pytest test_cross_browser_github.py --html=report_brave.html --self-contained-html
+
+      - name: Upload Brave report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brave-report
+          path: report_brave.html
