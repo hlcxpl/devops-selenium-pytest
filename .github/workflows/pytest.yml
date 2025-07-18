@@ -1,4 +1,4 @@
-name: Cross-Browser Selenium Tests
+name: Cross Browser Selenium Tests
 
 on: [push]
 
@@ -6,6 +6,7 @@ jobs:
   chrome-test:
     name: Chrome
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -13,10 +14,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - uses: browser-actions/setup-chrome@latest
-      - uses: nanasess/setup-chromedriver@master
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@latest
 
-      - run: |
+      - name: Install dependencies
+        run: |
           pip install -r requirements.txt
           pip install pytest pytest-html
 
@@ -26,7 +28,8 @@ jobs:
         run: |
           pytest test_cross_browser_github.py --html=report_chrome.html --self-contained-html
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Chrome Report
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-chrome
@@ -35,6 +38,7 @@ jobs:
   firefox-test:
     name: Firefox
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -42,9 +46,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      # Firefox y Geckodriver ya están preinstalados en ubuntu-latest
-
-      - run: |
+      - name: Install dependencies
+        run: |
           pip install -r requirements.txt
           pip install pytest pytest-html
 
@@ -54,7 +57,8 @@ jobs:
         run: |
           pytest test_cross_browser_github.py --html=report_firefox.html --self-contained-html
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Firefox Report
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-firefox
@@ -62,8 +66,8 @@ jobs:
 
   safari-test:
     name: Safari
-    runs-on: macos-latest
-    if: ${{ false }}  # cambia a true si usas macOS runner pago
+    runs-on: macos-latest  # MacOS runner necesario
+
     steps:
       - uses: actions/checkout@v4
 
@@ -71,7 +75,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - run: |
+      - name: Install dependencies
+        run: |
           pip install -r requirements.txt
           pip install pytest pytest-html
 
@@ -81,7 +86,8 @@ jobs:
         run: |
           pytest test_cross_browser_github.py --html=report_safari.html --self-contained-html
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Safari Report
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-safari
@@ -90,7 +96,7 @@ jobs:
   brave-test:
     name: Brave
     runs-on: ubuntu-latest
-    if: ${{ false }}  # cambia a true si Brave está instalado o usas self-hosted runner
+
     steps:
       - uses: actions/checkout@v4
 
@@ -98,15 +104,17 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install Brave (opcional)
+      - name: Install Brave Browser
         run: |
-          sudo apt install -y curl
-          sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave.com/static-assets/keys/brave-browser-archive-keyring.gpg
-          echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+          sudo apt update
+          sudo apt install -y curl apt-transport-https
+          curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave.com/static-assets/keys/brave-browser-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
           sudo apt update
           sudo apt install -y brave-browser
 
-      - run: |
+      - name: Install dependencies
+        run: |
           pip install -r requirements.txt
           pip install pytest pytest-html
 
@@ -116,7 +124,8 @@ jobs:
         run: |
           pytest test_cross_browser_github.py --html=report_brave.html --self-contained-html
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Brave Report
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-brave
